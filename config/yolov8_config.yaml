@@ -1,0 +1,32 @@
+vision_node:
+  ros__parameters:
+    # 双模型并集配置 (解决单模型漏检: best检测dmm好, 617检测psu好)
+    model_a: "/userdata/dev_ws/src/originbot_detect/model/best.onnx"
+    model_b: "/userdata/dev_ws/src/originbot_detect/model/617.onnx"
+    conf_thres: 0.15
+    iou_thres: 0.45
+    merge_iou: 0.5
+    camera_topic: "/image"
+
+    # 华为云 IoTDA 连接参数（L610 模组 AT+HMCON 命令，无需 HMAC-SHA256）
+    huawei_mqtt_server: "517c1b2cc8.st1.iotda-device.cn-north-4.myhuaweicloud.com"    # 华为云 MQTT 服务器地址（从 IoTDA 控制台→总览→接入信息 获取）
+    huawei_mqtt_port: 1883                 # 8883=TLS加密, 1883=非加密
+    device_id: "6a172279cbb0cf6bb95f1880_lab_inspection"   # 华为云设备ID（格式: {产品ID}_{设备名称}）
+    device_secret: "g1234567"          # 华为云设备密钥（从 IoTDA 设备详情获取）
+
+    # 大模型 API Key 配置
+    qwen_api_key: "sk-33a2d028f38847b6a625f3f3efdcac84"
+
+    # L610 模块底层串口参数
+    uart_device: "/dev/ttyUSB7"
+    uart_baudrate: 115200
+
+    # 常用物品检测字典（传给千问大模型进行二次研判）
+    forgotten_items_dict: ["手机", "水杯", "耳机", "鼠标", "笔", "眼镜"]
+
+    # 实验室工位与学生联系电话映射表 (用于精准短信报警通知)
+    station_contacts:
+      station_0: ["15009012402", "15009012402", "15009012402"] # 凳子未归位全员发送
+      station_1: ["15009012402"]                              # 工位1对应学生
+      station_2: ["15009012402"]                              # 工位2对应学生
+      station_3: ["15009012402"]                              # 工位3对应学生

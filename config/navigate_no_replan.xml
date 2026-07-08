@@ -1,0 +1,13 @@
+<!--
+  单次规划 + 跟随，不自动重规划。恢复由 behavior_server 处理。
+  当前使用 Nav2 内置官方行为树（重规划+恢复），此文件为回退备用。
+  如需切换回此单次规划版本，在 nav2_params.yaml 中取消 bt_xml_filename 注释即可。
+-->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <PipelineSequence name="NavigateOnce">
+      <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+      <FollowPath path="{path}" controller_id="FollowPath"/>
+    </PipelineSequence>
+  </BehaviorTree>
+</root>

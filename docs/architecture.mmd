@@ -1,0 +1,25 @@
+graph LR
+  Nav[NavigationNode]
+  Vision[VisionNode]
+  Camera[Camera]
+  Nav2[Nav2]
+  Services[Services]
+  BPU[BPU]
+  Merge[Merge Logic]
+  LLM[Qwen LLM]
+  L610[L610 Module]
+  Huawei[Huawei IoTDA]
+  SMS[SMS]
+
+  Camera --> Vision
+  Nav --> Nav2
+  Nav --> Vision
+  Vision --> BPU
+  BPU --> Vision
+  Vision --> Merge
+  Merge --> Vision
+  Vision --> LLM
+  Vision --> L610
+  L610 --> Huawei
+  L610 --> SMS
+  Vision --> Services

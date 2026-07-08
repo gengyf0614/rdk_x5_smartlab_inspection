@@ -1,0 +1,4 @@
+int32 station_id
+---
+bool success
+string message

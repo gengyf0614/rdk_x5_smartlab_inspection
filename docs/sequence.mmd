@@ -1,0 +1,32 @@
+sequenceDiagram
+  participant Operator
+  participant Nav
+  participant Nav2
+  participant Vision
+  participant Camera
+  participant BPU
+  participant Merge
+  participant LLM
+  participant L610
+  participant Huawei
+
+  Operator->>Nav: start inspection
+  Nav->>Nav2: navigate to station
+  Nav2-->>Nav: arrive
+  Nav->>Vision: trigger inspection
+  Vision->>Camera: read latest frame
+  Camera-->>Vision: frame
+  Vision->>BPU: run inference
+  BPU-->>Vision: detections
+  Vision->>Merge: NMS and merge
+  Merge-->>Vision: merged results
+  Vision->>Vision: evaluate status
+  alt mess detected
+    Vision->>LLM: send ROI and prompt
+    LLM-->>Vision: judgement
+  end
+  Vision->>L610: connect and publish
+  L610-->>Huawei: MQTT report
+  Huawei-->>L610: ack
+  Vision-->>Nav: inspection result
+  Nav->>Nav2: next station or home
