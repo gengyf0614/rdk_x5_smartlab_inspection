@@ -1,33 +1,32 @@
-# Smart Laboratory Inspection System Based on RDKx5
+# Smart Lab Inspection System Based on RDKx5
 
-`lab_inspection` is a ROS 2 package that implements a smart laboratory inspection system based on RDKx5. It integrates Nav2 navigation, visual detection, AI inference, Huawei IoTDA reporting, L610 4G module control, and an optional large-language-model-based secondary judgment.
+`lab_inspection` is a ROS2 package that implements a smart laboratory inspection system based on RDKx5. It integrates Nav2 navigation, visual inspection, AI inference, Huawei Cloud IoTDA reporting, L610 4G module control, and an optional large model for secondary judgment.
 
 ## Main Features
 
-- ROS 2 package containing `navigation_node` and `vision_node`
-- Autonomous inspection navigation based on Nav2: AMCL, map_server, planner, controller, and behavior server
+- ROS2 contains `navigation_node` and `vision_node`
+- Autonomous cruising based on Nav2: AMCL, map_server, planner, controller, behavior server
 - Visual inspection model: `yolov8n.bin`
-- Custom `/trigger_inspection` service for initiating inspection tasks
-- MQTT reporting through the L610 4G module and Huawei IoTDA
-- Optional Qwen large-model assistance for ambiguous target judgment
-- Automatic publishing of the static TF from `base_link` to `laser_link`, supporting compatible lidar layouts
+- Custom `/trigger_inspection` service to trigger inspection
+- MQTT reporting via L610 4G module and Huawei IoTDA
+- Optional Qwen large model for assisting ambiguous target judgment
+- Automatically publish `base_link` → `laser_link` static TF, supporting compatible LiDAR layout
 
 ## Repository Structure
 
-- `CMakeLists.txt` — ROS 2 package build and installation configuration
-- `package.xml` — Package manifest and dependency declarations
-- `launch/lab_inspection.launch.py` — Starts the robot base, Nav2, vision, and navigation nodes
-- `config/` — Nav2 parameters, YOLOv8/vision parameters, and navigation configuration
+- `CMakeLists.txt` — ROS2 package build and installation configuration
+- `package.xml` — Package manifest and dependency declaration
+- `launch/lab_inspection.launch.py` — Launch robot base, Nav2, vision and navigation nodes
+- `config/` — Nav2 parameters, YOLOv8/vision parameters, navigation configuration
 - `maps/` — Laboratory map files
-- `models/` — Vision model files, supporting `.bin` deployment
-- `scripts/vision_py.py` — Python vision node supporting dual-model inference and cloud reporting
-- `src/navigation_node.cpp` — C++ navigation node responsible for inspection station coordination and service interaction
-- `src/vision_node.cpp` — C++ vision node responsible for low-level hardware access and inference deployment
+- `models/` — Vision model files, supporting `.bin` hardware deployment
+- `src/navigation_node.cpp` — C++ navigation node, responsible for inspection station coordination and service interaction
+- `src/vision_node.cpp` — C++ vision node, responsible for low-level hardware and inference deployment
 - `srv/TriggerInspection.srv` — Custom inspection service definition
 
 ## Build Steps
 
-1. Source the ROS 2 environment:
+1. Source the ROS2 environment:
 
 ```bash
 source /opt/ros/<ros2-distro>/setup.bash
@@ -63,13 +62,13 @@ colcon build --packages-select lab_inspection
 source install/setup.bash
 ```
 
-## Launch Instructions
+## Launch
 
 ```bash
 ros2 launch lab_inspection lab_inspection.launch.py
 ```
 
-Optional arguments:
+Optional parameters:
 
 ```bash
 ros2 launch lab_inspection lab_inspection.launch.py initial_x:=0.0 initial_y:=0.0 initial_yaw:=0.0
@@ -77,21 +76,21 @@ ros2 launch lab_inspection lab_inspection.launch.py initial_x:=0.0 initial_y:=0.
 
 This launch file will:
 
-- Start the robot bringup stack, loading the camera, lidar, and IMU
-- Publish the static TF from `base_link` to `laser_link`
-- Start the Nav2 stack: map_server, AMCL, planner, controller, behavior server, and lifecycle manager
-- Start the `vision_py.py` inspection node
-- Start the `navigation_node` inspection coordination node
+- Start the robot base bringup, loading camera, LiDAR and IMU
+- Publish `base_link` -> `laser_link` static TF
+- Start Nav2 stack: map_server, AMCL, planner, controller, behavior server, lifecycle manager
+- Start `vision_py.py` visual inspection node
+- Start `navigation_node` inspection navigation coordinator node
 
-## Service Usage
+## Running Services
 
-- `/trigger_inspection` (`lab_inspection/srv/TriggerInspection`) — Initiates a visual inspection
-- `/start_inspection` — Starts the inspection workflow
-- `/skip_station` — Skips the current station
-- `/connect_huawei_cloud` — Connects to Huawei Cloud
-- `/disconnect_huawei_cloud` — Disconnects from Huawei Cloud
+- `/trigger_inspection` (`lab_inspection/srv/TriggerInspection`) — Initiate visual inspection
+- `/start_inspection` — Start inspection process
+- `/skip_station` — Skip the current station
+- `/connect_huawei_cloud` — Connect to Huawei Cloud
+- `/disconnect_huawei_cloud` — Disconnect from Huawei Cloud
 
-The `TriggerInspection` service definition is:
+`TriggerInspection` service definition:
 
 ```srv
 int32 station_id
@@ -100,18 +99,47 @@ bool success
 string message
 ```
 
+## Visual Inspection Results
+
+### Instrument Status and Chair Return Detection
+
+| Scene | Detection Result |
+|------|----------|
+| Instrument power status | ![results/detection.jpg) |
+| Chair not returned | ![Chair detection 1](results/chair_untidy.jpg)|
+
+### Real-time Web Monitoring
+
+![Web monitoring](results/web_result.png)
+
+### Model Detection Accuracy (136-image test set)
+
+| Category | English Name | AP@0.5 | GT Count | Rating |
+|------|--------|:------:|:-----:|:----:|
+| Chair untidy | chair_untidy | **100.0%** | 10 | ✅ Perfect |
+| Oscilloscope on | osc_on | **100.0%** | 42 | ✅ Perfect |
+| Oscilloscope off | osc_off | **100.0%** | 84 | ✅ Perfect |
+| Signal generator on | siggen_on | **90.9%** | 52 | ✅ Excellent |
+| Signal generator off | siggen_off | **100.0%** | 74 | ✅ Perfect |
+| DC power supply on | psu_on | **90.9%** | 69 | ✅ Excellent |
+| DC power supply off | psu_off | 72.7% | 57 | ⚠️ Needs improvement |
+| Digital multimeter on | dmm_on | 54.5% | 67 | ⚠️ Needs improvement |
+| Digital multimeter off | dmm_off | 63.6% | 59 | ⚠️ Needs improvement |
+| Messy desktop | mess | 89.2% | 79 | ✅ Good |
+| **Average** | | **86.2%** | 593 | **mAP@0.5** |
+
 ## Configuration Files
 
 - `config/nav2_params.yaml` — Nav2 parameters and lifecycle configuration
 - `config/navigate_no_replan.xml` — Nav2 behavior tree configuration
-- `config/yolov8_config.yaml` — YOLOv8 and vision parameter configuration
+- `config/yolov8_config.yaml` — YOLOv8 and visual parameters configuration
 - `maps/lab_map.yaml` — Nav2 map file
-- `models/yolov8n.bin` — Vision model file in `.bin` format
+- `models/yolov8n.bin` — `.bin` visual model
 
-## Hardware Requirements
+## Hardware Dependency Notes
 
-- Compatible with RDKx5-based robot platforms and existing robot bringup packages
-- Supports BPU acceleration when the `hb_dnn` library is available; x86 platforms can run in a degraded mode without BPU
-- Requires image topics published by the robot camera driver, such as `/image`
-- Uses the L610 4G module and UART control for Huawei cloud reporting
-- Requires Huawei device credentials and a Qwen API key for cloud reporting and optional large-model inference
+- Adapted for robot platforms based on RDKx5, compatible with existing robot bringup packages
+- When `hb_dnn` library is present, BPU acceleration is supported; x86 platforms can run degraded without BPU
+- Requires the robot's camera driver to publish image topics, e.g., `/image`
+- Uses L610 4G module and UART control for Huawei Cloud reporting
+- Requires Huawei device credentials and Qwen API Key for cloud reporting and optional large model judgment
