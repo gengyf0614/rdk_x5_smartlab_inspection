@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@huaweicloud/huaweicloud-sdk-core": "^3.1.202",
+    "@huaweicloud/huaweicloud-sdk-iam": "^3.1.202",
+    "@huaweicloud/huaweicloud-sdk-iotda": "^3.1.202",
+    "uuid": "^14.0.1"
+  }
+}
