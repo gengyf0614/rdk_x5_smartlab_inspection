@@ -20,7 +20,6 @@
 - `config/` — Nav2 参数、YOLOv8/视觉参数、导航配置
 - `maps/` — 实验室地图文件
 - `models/` — 视觉模型文件，支持 `.bin` 硬件部署
-- `scripts/vision_py.py` — Python 视觉节点，支持双模型推理与云上报
 - `src/navigation_node.cpp` — C++ 导航节点，负责巡检工位与服务交互
 - `src/vision_node.cpp` — C++ 视觉节点，负责底层硬件与推理部署
 - `srv/TriggerInspection.srv` — 自定义巡检服务定义
@@ -80,8 +79,8 @@ ros2 launch lab_inspection lab_inspection.launch.py initial_x:=0.0 initial_y:=0.
 - 启动机器人底层 bringup，加载相机、激光雷达和 IMU
 - 发布 `base_link` -> `laser_link` 静态 TF
 - 启动 Nav2 栈：map_server、AMCL、planner、controller、behavior server、lifecycle manager
-- 启动 `vision_py.py` 视觉巡检节点
 - 启动 `navigation_node` 巡检导航协调节点
+- 启动 `vision_node` 视觉巡检节点
 
 ## 运行服务
 
@@ -99,6 +98,36 @@ int32 station_id
 bool success
 string message
 ```
+
+## 视觉检测效果展示
+
+### 仪器状态与椅子归位检测
+
+| 场景 | 检测结果 |
+|------|----------|
+| 仪器开关状态 | ![仪器检测](../originbot_detect/results/img_0013.jpg) |
+| 椅子未归位 | ![椅子检测1](../originbot_detect/results/img_0001.jpg) ![椅子检测2](../originbot_detect/results/img_0003.jpg) |
+
+### Web 端实时监控
+
+![Web监控](results/web_result.png)
+
+### 模型检测精度 (136 张测试集)
+
+| 类别 | 英文名 | AP@0.5 | GT 数 |
+|------|--------|:------:|:-----:|
+| 椅子未归位 | chair_untidy | **100.0%** | 10 |
+| 示波器开机 | osc_on | **100.0%** | 42 |
+| 示波器关机 | osc_off | **100.0%** | 84 |
+| 信号发生器开机 | siggen_on | **90.9%** | 52 |
+| 信号发生器关机 | siggen_off | **100.0%** | 74 |
+| 稳压电源开机 | psu_on | **90.9%** | 69 |
+| 稳压电源关机 | psu_off | 72.7% | 57 |
+| 万用表开机 | dmm_on | 54.5% | 67 |
+| 万用表关机 | dmm_off | 63.6% | 59 |
+| 桌面杂乱 | mess | 89.2% | 79 |
+| **平均** | | **86.2%** | 593 | **mAP@0.5** |
+
 
 ## 配置文件说明
 
