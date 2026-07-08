@@ -105,7 +105,7 @@ string message
 
 | Scene | Detection Result |
 |------|----------|
-| Instrument power status | ![results/detection.jpg) |
+| Instrument power status | ![Instrument detection](results/detection.jpg) |
 | Chair not returned | ![Chair detection 1](results/chair_untidy.jpg)|
 
 ### Real-time Web Monitoring
