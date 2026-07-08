@@ -105,8 +105,8 @@ string message
 
 | 场景 | 检测结果 |
 |------|----------|
-| 仪器开关状态 | ![仪器检测](../originbot_detect/results/img_0013.jpg) |
-| 椅子未归位 | ![椅子检测1](../originbot_detect/results/img_0001.jpg) ![椅子检测2](../originbot_detect/results/img_0003.jpg) |
+| 仪器开关状态 | ![仪器检测](results/detection.jpg) |
+| 椅子未归位 | ![椅子检测1](results/chair_untidy.jpg) |
 
 ### Web 端实时监控
 
